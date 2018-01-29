@@ -29,15 +29,15 @@ exports.handler = function (event, context) {
                 S3ObjectVersion: version
             };
 
-            lambda.updateFunctionCode(params)
-                .then((data) => {
-                    console.log(`Lambda ${filename} updated`, data);
-                    context.succeed(data);
-                })
-                .catch((err) => {
+            lambda.updateFunctionCode(params, (err, data) => {
+                if (err) {
                     console.log(err, err.stack);
                     context.fail(err);
-                });
+                } else {
+                    console.log(`Lambda ${filename} updated`, data);
+                    context.succeed(data);
+                }
+            });
         } else {
             context.succeed(`skipping version ${version} of ${key} in bucket ${bucket}`);
         }
